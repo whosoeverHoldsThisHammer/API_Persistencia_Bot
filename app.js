@@ -1,7 +1,9 @@
 import express from 'express'
 import mongoose from 'mongoose'
 import * as dotenv from 'dotenv'
-import Session from './model/session.js';
+import Session from './model/session.js'
+import getCurrentTime from './utils/time.js'
+import generateRandomID from './utils/randomId.js'
 
 dotenv.config();
 const app = express()
@@ -62,17 +64,15 @@ app.patch("/:id", async(req, res)=>{
     
     try {
         const session = await Session.findOne({ chat_id: chatId })
-        
-        if(session !== null){
-            session.session_id = "456"
-            session.last_active = "now!!!"
-        }
 
-        console.log(session)
-        
+        if(session !== null){
+            session.session_id = generateRandomID()
+            session.last_active = getCurrentTime()
+        }
+ 
         const updatedSession = await session.save()
         
-        res.json(session)
+        res.json(updatedSession)
     }
     catch(err){
         res.json({
