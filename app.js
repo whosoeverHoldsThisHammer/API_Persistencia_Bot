@@ -55,3 +55,29 @@ app.post("/", async(req, res)=>{
     }
     
 })
+
+
+app.patch("/:id", async(req, res)=>{
+    const chatId = req.params.id
+    
+    try {
+        const session = await Session.findOne({ chat_id: chatId })
+        
+        if(session !== null){
+            session.session_id = "456"
+            session.last_active = "now!!!"
+        }
+
+        console.log(session)
+        
+        const updatedSession = await session.save()
+        
+        res.json(session)
+    }
+    catch(err){
+        res.json({
+            message: err.message
+        })
+    }
+
+})
