@@ -142,6 +142,20 @@ app.get("/conversations", async(req, res) => {
 })
 
 
+app.get("/conversations/findBySessionId/:id", async(req, res) => {
+    const sessionId = req.params.id
+
+    try {
+        const conversation = await Conversation.findOne({ session_id: sessionId })
+        res.json(conversation)
+    } catch(err) {
+        res.json({
+            message: err.message
+        })
+    }
+})
+
+
 app.post("/conversations", async(req, res)=>{
     const chatId = req.body.chat_id
     const userId = req.body.user_id
