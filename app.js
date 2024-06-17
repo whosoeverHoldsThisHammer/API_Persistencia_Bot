@@ -5,6 +5,8 @@ import Session from './model/session.js'
 import getCurrentTime from './utils/time.js'
 import generateRandomID from './utils/randomId.js'
 import Conversation from './model/conversation.js'
+import HumanMessage from './model/humanMessage.js'
+import AiMessage from './model/aiMessage.js'
 
 dotenv.config();
 const app = express()
@@ -155,11 +157,70 @@ app.post("/conversations", async(req, res)=>{
 
     try {
         const newConversation = await conversation.save()
-        console.log(newConversation)
+        // console.log(newConversation)
         res.json(newConversation)
     }
     catch(err){
         res.status(400).json({
+            message: err.message
+        })
+    }
+    
+})
+
+
+app.patch("/conversations/saveMessage", async(req, res)=>{
+    // Para buscar el chat
+    const chatId = req.body.chat_id
+    const sessionId = req.body.session_id
+    
+    // Para crear el nuevo tupo de mensaje
+    const role = req.body.role
+    const messageId = req.body.message_id
+    const content = req.body.content
+    const date = req.body.date
+
+    let message
+    
+    try {
+        const conversation = await Conversation.findOne({
+            chat_id: chatId,
+            session_id: sessionId
+        })
+        
+        if(conversation !== null){
+
+            console.log("Encontró la conversación")
+
+            if(role === "human"){
+
+                message = new HumanMessage({
+                    role: role,
+                    message_id: messageId,
+                    content: content,
+                    date: date
+                })
+        
+            } else if(role === "bot") {
+                
+                message = new AiMessage({
+                    role: role,
+                    message_id: messageId,
+                    content: content,
+                    date: date,
+                    feedback: ""
+                })
+            }
+
+            
+            conversation.messages.push(message)
+            await conversation.save();
+            res.json(conversation)
+
+        }
+    }
+    catch(err){
+        res.json({
             message: err.message
         })
     }
