@@ -38,6 +38,20 @@ app.get("/", async (req, res) => {
 })
 
 
+app.get("/:id", async (req, res)=> {
+    
+    const chatId = req.params.id
+    let session
+
+    try {
+        session = await Session.findOne({ chat_id: chatId })
+    } catch(err) {
+        console.log("error, err")
+    }
+
+    res.json(session)
+})
+
 app.post("/", async(req, res)=>{
     
     const session = new Session({
