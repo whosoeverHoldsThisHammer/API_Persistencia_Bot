@@ -7,7 +7,7 @@ import generateRandomID from './utils/randomId.js'
 
 dotenv.config();
 const app = express()
-
+app.use(express.json())
 
 mongoose.connect(process.env.MONGO_URI)
 .then(()=> console.log("Conectado a Mongo"))
@@ -53,11 +53,12 @@ app.get("/:id", async (req, res)=> {
 })
 
 app.post("/", async(req, res)=>{
-    
+    const chatId = req.body.chat_id
+
     const session = new Session({
-        chat_id: "1",
-        last_active: "now",
-        session_id: "1234"
+        chat_id: chatId,
+        last_active: generateRandomID(),
+        session_id: getCurrentTime()
     })
 
     try {
