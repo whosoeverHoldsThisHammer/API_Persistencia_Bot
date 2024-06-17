@@ -4,6 +4,7 @@ import * as dotenv from 'dotenv'
 import Session from './model/session.js'
 import getCurrentTime from './utils/time.js'
 import generateRandomID from './utils/randomId.js'
+import Conversation from './model/conversation.js'
 
 dotenv.config();
 const app = express()
@@ -27,7 +28,7 @@ app.listen(PORT, ()=> {
 })
 
 
-app.get("/", async (req, res) => {
+app.get("/sessions", async (req, res) => {
     try {
         const sessions = await Session.find()
         //console.log(sessions)
@@ -40,7 +41,7 @@ app.get("/", async (req, res) => {
 })
 
 
-app.get("/:id", async (req, res)=> {
+app.get("/sessions/:id", async (req, res)=> {
     
     const chatId = req.params.id
     let session
@@ -56,7 +57,7 @@ app.get("/:id", async (req, res)=> {
     res.json(session)
 })
 
-app.post("/", async(req, res)=>{
+app.post("/sessions", async(req, res)=>{
     const chatId = req.body.chat_id
 
     const session = new Session({
@@ -78,7 +79,7 @@ app.post("/", async(req, res)=>{
 })
 
 
-app.patch("/updateSession/:id", async(req, res)=>{
+app.patch("sessions/updateSession/:id", async(req, res)=>{
     const chatId = req.params.id
     
     try {
@@ -102,7 +103,7 @@ app.patch("/updateSession/:id", async(req, res)=>{
 })
 
 
-app.patch("/updateActivity/:id", async(req, res)=>{
+app.patch("sessions/updateActivity/:id", async(req, res)=>{
     const chatId = req.params.id
     
     try {
@@ -122,4 +123,45 @@ app.patch("/updateActivity/:id", async(req, res)=>{
         })
     }
 
+})
+
+
+// Conversations
+
+app.get("/conversations", async(req, res) => {
+    try {
+        const conversations = await Conversation.find()
+        res.json(conversations)
+    } catch(err) {
+        res.json({
+            message: err.message
+        })
+    }
+})
+
+
+app.post("/conversations", async(req, res)=>{
+    const chatId = req.body.chat_id
+    const userId = req.body.user_id
+    const sessionId = req.body.session_id
+  
+    const conversation = new Conversation({
+        chat_id: chatId,
+        user_id: userId,
+        session_id: sessionId,
+        status: "open",
+        messages: []
+    })
+
+    try {
+        const newConversation = await conversation.save()
+        console.log(newConversation)
+        res.json(newConversation)
+    }
+    catch(err){
+        res.status(400).json({
+            message: err.message
+        })
+    }
+    
 })
