@@ -171,7 +171,6 @@ app.post("/conversations", async(req, res)=>{
 
     try {
         const newConversation = await conversation.save()
-        // console.log(newConversation)
         res.json(newConversation)
     }
     catch(err){
@@ -183,10 +182,10 @@ app.post("/conversations", async(req, res)=>{
 })
 
 
-app.patch("/conversations/saveMessage", async(req, res)=>{
+app.patch("/conversations/:id/:sessionId/saveMessage", async(req, res)=>{
     // Para buscar el chat
-    const chatId = req.body.chat_id
-    const sessionId = req.body.session_id
+    const chatId = req.params.id
+    const sessionId = req.params.sessionId
     
     // Para crear el nuevo tupo de mensaje
     const role = req.body.role
@@ -215,7 +214,7 @@ app.patch("/conversations/saveMessage", async(req, res)=>{
                     date: date
                 })
         
-            } else if(role === "bot") {
+            } else if(role === "ai") {
                 
                 message = new AiMessage({
                     role: role,
@@ -239,4 +238,33 @@ app.patch("/conversations/saveMessage", async(req, res)=>{
         })
     }
     
+})
+
+app.patch("/conversations/:id/:sessionId/saveFeedback", async(req, res)=>{
+    // Para buscar el chat
+    const chatId = req.params.id
+    const sessionId = req.params.sessionId
+
+    // Para obtener el feedback
+    const messageId = req.body.message_id
+    const feedback = req.body.feedback
+
+    try {
+        const conversation = await Conversation.findOne({ chat_id: chatId, session_id: sessionId})
+
+        if(conversation != null){
+            let message = conversation.messages.find(message => message.message_id === messageId)
+            
+            message.feedback = feedback
+
+            await conversation.save();
+            res.json(conversation)
+            
+        }
+
+    } catch(err){
+        res.json({
+            message: err.message
+        })
+    }
 })
