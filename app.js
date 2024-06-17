@@ -30,10 +30,12 @@ app.listen(PORT, ()=> {
 app.get("/", async (req, res) => {
     try {
         const sessions = await Session.find()
-        console.log(sessions)
+        //console.log(sessions)
         res.json(sessions)
     } catch(err) {
-        console.log("error", err)
+        res.json({
+            message: err.message
+        })
     }
 })
 
@@ -46,7 +48,9 @@ app.get("/:id", async (req, res)=> {
     try {
         session = await Session.findOne({ chat_id: chatId })
     } catch(err) {
-        console.log("error, err")
+        res.json({
+            message: err.message
+        })
     }
 
     res.json(session)
@@ -57,8 +61,8 @@ app.post("/", async(req, res)=>{
 
     const session = new Session({
         chat_id: chatId,
-        last_active: generateRandomID(),
-        session_id: getCurrentTime()
+        last_active: getCurrentTime(),
+        session_id: generateRandomID()
     })
 
     try {
@@ -74,7 +78,7 @@ app.post("/", async(req, res)=>{
 })
 
 
-app.patch("/:id", async(req, res)=>{
+app.patch("/updateSession/:id", async(req, res)=>{
     const chatId = req.params.id
     
     try {
@@ -82,6 +86,29 @@ app.patch("/:id", async(req, res)=>{
 
         if(session !== null){
             session.session_id = generateRandomID()
+            session.last_active = getCurrentTime()
+        }
+ 
+        const updatedSession = await session.save()
+        
+        res.json(updatedSession)
+    }
+    catch(err){
+        res.json({
+            message: err.message
+        })
+    }
+
+})
+
+
+app.patch("/updateActivity/:id", async(req, res)=>{
+    const chatId = req.params.id
+    
+    try {
+        const session = await Session.findOne({ chat_id: chatId })
+
+        if(session !== null){
             session.last_active = getCurrentTime()
         }
  
