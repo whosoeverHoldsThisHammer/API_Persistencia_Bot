@@ -81,7 +81,7 @@ app.post("/sessions", async(req, res)=>{
 })
 
 
-app.patch("sessions/updateSession/:id", async(req, res)=>{
+app.patch("/sessions/updateSession/:id", async(req, res)=>{
     const chatId = req.params.id
     
     try {
@@ -105,7 +105,7 @@ app.patch("sessions/updateSession/:id", async(req, res)=>{
 })
 
 
-app.patch("sessions/updateActivity/:id", async(req, res)=>{
+app.patch("/sessions/updateActivity/:id", async(req, res)=>{
     const chatId = req.params.id
     
     try {
