@@ -270,3 +270,43 @@ app.patch("/conversations/:id/:sessionId/saveFeedback", async(req, res)=>{
         })
     }
 })
+
+
+app.get("/conversations/:id/:sessionId/messages", async(req, res)=>{
+
+    const DEFAULT = 4
+
+    // Para buscar el chat
+    const chatId = req.params.id
+    const sessionId = req.params.sessionId
+
+    // Trae la cantidad de mensajes solicitadas en el query o sino los últimos 4
+    const limit = parseInt(req.query.limit) || DEFAULT
+
+    try {
+        const conversation = await Conversation.findOne({ chat_id: chatId, session_id: sessionId})
+
+        if(conversation != null){
+            
+            if (conversation.messages && conversation.messages.length > 0) {
+
+                const messages = conversation.messages
+                const index = Math.max(messages.length - limit, 0);
+                const lastMessages = messages.slice(index);
+                
+                res.json(lastMessages)
+
+
+            } else {
+                res.json([])    
+            }
+            
+        }
+
+    } catch(err){
+        res.json({
+            message: err.message
+        })
+    }
+    
+})
