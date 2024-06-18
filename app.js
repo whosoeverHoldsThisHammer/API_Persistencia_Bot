@@ -203,7 +203,7 @@ app.patch("/conversations/:id/:sessionId/saveMessage", async(req, res)=>{
         
         if(conversation !== null){
 
-            console.log("Encontró la conversación")
+            // console.log("Encontró la conversación")
 
             if(role === "human"){
 
@@ -221,7 +221,7 @@ app.patch("/conversations/:id/:sessionId/saveMessage", async(req, res)=>{
                     message_id: messageId,
                     content: content,
                     date: date,
-                    feedback: ""
+                    feedback: "None"
                 })
             }
 
@@ -257,8 +257,10 @@ app.patch("/conversations/:id/:sessionId/saveFeedback", async(req, res)=>{
             
             message.feedback = feedback
 
-            await conversation.save();
-            res.json(conversation)
+            conversation.markModified('messages')
+
+            const savedConversation = await conversation.save()
+            res.json(savedConversation)
             
         }
 

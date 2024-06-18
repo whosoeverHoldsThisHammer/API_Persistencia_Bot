@@ -18,7 +18,7 @@ const AiMessageSchema = new mongoose.Schema({
         required: true
     },
     feedback: {
-        type: Boolean,
+        type: String,
         required: false
     }
 })
