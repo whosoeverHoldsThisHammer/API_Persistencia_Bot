@@ -240,17 +240,16 @@ app.patch("/conversations/:id/:sessionId/saveMessage", async(req, res)=>{
     
 })
 
-app.patch("/conversations/:id/:sessionId/saveFeedback", async(req, res)=>{
+app.patch("/conversations/:id/saveFeedback", async(req, res)=>{
     // Para buscar el chat
     const chatId = req.params.id
-    const sessionId = req.params.sessionId
 
     // Para obtener el feedback
     const messageId = req.body.message_id
     const feedback = req.body.feedback
 
     try {
-        const conversation = await Conversation.findOne({ chat_id: chatId, session_id: sessionId})
+        const conversation = await Conversation.findOne({ chat_id: chatId, "messages.message_id": messageId})
 
         if(conversation != null){
             let message = conversation.messages.find(message => message.message_id === messageId)
