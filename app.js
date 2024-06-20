@@ -7,6 +7,7 @@ import generateRandomID from './utils/randomId.js'
 import Conversation from './model/conversation.js'
 import HumanMessage from './model/humanMessage.js'
 import AiMessage from './model/aiMessage.js'
+import cors from "cors";
 
 dotenv.config();
 const app = express()
@@ -21,7 +22,13 @@ const db = mongoose.connection
 db.on('error', (error) => console.log(error))
 db.once('open', ()=> console.log("Conectado a la base de datos"))
 
-
+app.use(
+    cors({
+      origin: "http://localhost:5173",
+      methods: ["GET", "POST"],
+      allowedHeaders: ["Content-Type"],
+    })
+  );  
 
 const PORT = process.env.PORT
 
