@@ -240,12 +240,12 @@ app.patch("/conversations/:id/:sessionId/saveMessage", async(req, res)=>{
     
 })
 
-app.patch("/conversations/:id/saveFeedback", async(req, res)=>{
+app.patch("/conversations/:id/:message_id/saveFeedback", async(req, res)=>{
     // Para buscar el chat
     const chatId = req.params.id
+    const messageId = req.params.message_id
 
     // Para obtener el feedback
-    const messageId = req.body.message_id
     const feedback = req.body.feedback
 
     try {
