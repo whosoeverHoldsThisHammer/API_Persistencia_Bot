@@ -14,6 +14,7 @@ dotenv.config()
 const app = express()
 app.use(cors())
 app.use(express.json())
+app.use(routerMaster)
 
 mongoose.connect(process.env.MONGO_URI)
 .then(()=> console.log("Conectado a Mongo"))
@@ -30,56 +31,6 @@ const PORT = process.env.PORT
 
 app.listen(PORT, ()=> {
     console.log(`Server express levantado en el puerto ${PORT}`)
-})
-
-
-app.get("/sessions", async (req, res) => {
-    try {
-        const sessions = await Session.find()
-        res.json(sessions)
-    } catch(err) {
-        res.json({
-            message: err.message
-        })
-    }
-})
-
-
-app.get("/sessions/:id", async (req, res)=> {
-    
-    const chatId = req.params.id
-    let session
-
-    try {
-        session = await Session.findOne({ chat_id: chatId })
-    } catch(err) {
-        res.json({
-            message: err.message
-        })
-    }
-
-    res.json(session)
-})
-
-app.post("/sessions", async(req, res)=>{
-    const chatId = req.body.chat_id
-
-    const session = new Session({
-        chat_id: chatId,
-        last_active: getCurrentTime(),
-        session_id: generateRandomID()
-    })
-
-    try {
-        const newSession = await session.save()
-        res.json(newSession)
-    }
-    catch(err){
-        res.status(400).json({
-            message: err.message
-        })
-    }
-    
 })
 
 
@@ -131,25 +82,6 @@ app.patch("/sessions/updateActivity/:id", async(req, res)=>{
 
 
 // Conversations
-
-app.get("/conversations", async(req, res) => {
-    const page = parseInt(req.query.page) || 1
-    const limit = parseInt(req.query.limit) || 100
-    const offset = (page - 1) * limit
-
-    try {
-        const conversations = await Conversation.find()
-        .skip(offset)
-        .limit(limit)
-        
-        res.json(conversations)
-    } catch(err) {
-        res.json({
-            message: err.message
-        })
-    }
-})
-
 
 app.get("/conversations/findBySessionId/:id", async(req, res) => {
     const sessionId = req.params.id
