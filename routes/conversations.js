@@ -1,9 +1,10 @@
 import express from 'express'
-import { getConversations, getConversationBySessionId, createConversation, saveMessages, saveFeedback, getMessages } from '../controllers/conversations.js'
+import { getConversations, getConversationsByChatId, getConversationBySessionId, createConversation, saveMessages, saveFeedback, getMessages } from '../controllers/conversations.js'
 
 const router = express.Router()
 
 router.get("/", getConversations)
+router.get("/:id", getConversationsByChatId)
 router.get("/findBySessionId/:id", getConversationBySessionId)
 router.post("/", createConversation)
 router.patch("/:id/:sessionId/saveMessage", saveMessages)

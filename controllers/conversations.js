@@ -8,11 +8,25 @@ const getConversations = async (req, res) => {
     const page = parseInt(req.query.page) || 1
     const limit = parseInt(req.query.limit) || 100
     const offset = (page - 1) * limit
+    let order = {}
+
+    switch (req.query.order) {
+        case 'asc':
+            order = 1
+            break;
+        case 'des':
+            order = -1
+            break;
+        default:
+            order = 1
+            break;
+    }
 
     try {
         const conversations = await Conversation.find()
         .skip(offset)
         .limit(limit)
+        .sort({ _id: order })
         
         res.json(conversations)
     } catch(err) {
@@ -20,6 +34,42 @@ const getConversations = async (req, res) => {
             message: err.message
         })
     }
+}
+
+
+const getConversationsByChatId = async (req, res) => {
+
+    const chatId = req.params.id
+    const page = parseInt(req.query.page) || 1
+    const limit = parseInt(req.query.limit) || 100
+    const offset = (page - 1) * limit
+    let order = {}
+
+    switch (req.query.order) {
+        case 'asc':
+            order = 1
+            break;
+        case 'des':
+            order = -1
+            break;
+        default:
+            order = 1
+            break;
+    }
+
+    try {
+        const conversations = await Conversation.find({ chat_id: chatId })
+        .skip(offset)
+        .limit(limit)
+        .sort({ _id: order })
+
+        res.json(conversations)
+    } catch(err) {
+        res.json({
+            message: err.message
+        })
+    }
+
 }
 
 const getConversationBySessionId = async (req, res) => {
@@ -193,4 +243,12 @@ const getMessages = async (req, res) => {
 }
 
 
-export { getConversations, getConversationBySessionId, createConversation, saveMessages, saveFeedback, getMessages }
+export { 
+    getConversations,
+    getConversationsByChatId,
+    getConversationBySessionId,
+    createConversation,
+    saveMessages,
+    saveFeedback,
+    getMessages
+}
