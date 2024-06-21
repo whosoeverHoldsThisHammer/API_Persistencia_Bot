@@ -25,11 +25,12 @@ ConversationSchema.pre('save', function(next) {
     const document = this
     
     // La conversación también se guarda al actualizar feedback de mensajes antigüos
-    // Podría hacer un save de una conversación cerrada
+    // Podría haber un save de una conversación cerrada que dispara este trigger
+    // Por eso consulta por el estado antes de hacer la operación
+
     if(document.status === "open"){
-        console.log("La conversación está abierta")
         setTimeout(()=>{
-            const MAX_MINUTES = 1
+            const MAX_MINUTES = 30
             const lastMessage = document.messages[document.messages.length - 1]
             
             let last = (parseInt(lastMessage.date))
@@ -38,17 +39,14 @@ ConversationSchema.pre('save', function(next) {
             const diff = Math.abs(current - last)
             const minutes = diff / (1000 * 60)
 
-            console.log(minutes > MAX_MINUTES)
-            if(minutes > MAX_MINUTES){
-                console.log("Hay que cerrar la conversación")
+            if(minutes > MAX_MINUTES){      
+                document.status = "closed"
+                document.save()
             }
             
-        }, 120000)
+        }, 1800000)
 
-    } else {
-        console.log("La conversación está cerrada")
     }
-    
 
     next()
 })
