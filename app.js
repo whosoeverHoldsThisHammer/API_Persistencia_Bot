@@ -34,55 +34,6 @@ app.listen(PORT, ()=> {
 })
 
 
-app.patch("/sessions/updateSession/:id", async(req, res)=>{
-    const chatId = req.params.id
-    
-    try {
-        const session = await Session.findOne({ chat_id: chatId })
-
-        if(session !== null){
-            session.session_id = generateRandomID()
-            session.last_active = getCurrentTime()
-        }
- 
-        const updatedSession = await session.save()
-        
-        res.json(updatedSession)
-    }
-    catch(err){
-        res.json({
-            message: err.message
-        })
-    }
-
-})
-
-
-app.patch("/sessions/updateActivity/:id", async(req, res)=>{
-    const chatId = req.params.id
-    
-    try {
-        const session = await Session.findOne({ chat_id: chatId })
-
-        if(session !== null){
-            session.last_active = getCurrentTime()
-        }
- 
-        const updatedSession = await session.save()
-        
-        res.json(updatedSession)
-    }
-    catch(err){
-        res.json({
-            message: err.message
-        })
-    }
-
-})
-
-
-// Conversations
-
 app.get("/conversations/findBySessionId/:id", async(req, res) => {
     const sessionId = req.params.id
 

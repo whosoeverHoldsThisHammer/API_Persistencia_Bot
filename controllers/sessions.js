@@ -54,6 +54,51 @@ const createSession = async (req, res) => {
 
 }
 
+const updateSession = async (req, res) => {
+
+    const chatId = req.params.id
+    
+    try {
+        const session = await Session.findOne({ chat_id: chatId })
+
+        if(session !== null){
+            session.session_id = generateRandomID()
+            session.last_active = getCurrentTime()
+        }
+ 
+        const updatedSession = await session.save()
+        
+        res.json(updatedSession)
+    }
+    catch(err){
+        res.json({
+            message: err.message
+        })
+    }
+
+}
 
 
-export { getSessions, getSessionById, createSession }
+const updateActivity = async (req, res) => {
+    const chatId = req.params.id
+    
+    try {
+        const session = await Session.findOne({ chat_id: chatId })
+
+        if(session !== null){
+            session.last_active = getCurrentTime()
+        }
+ 
+        const updatedSession = await session.save()
+        
+        res.json(updatedSession)
+    }
+    catch(err){
+        res.json({
+            message: err.message
+        })
+    }
+}
+
+
+export { getSessions, getSessionById, createSession, updateSession, updateActivity }
