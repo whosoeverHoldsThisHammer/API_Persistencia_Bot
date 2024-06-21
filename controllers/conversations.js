@@ -8,11 +8,25 @@ const getConversations = async (req, res) => {
     const page = parseInt(req.query.page) || 1
     const limit = parseInt(req.query.limit) || 100
     const offset = (page - 1) * limit
+    let order = {}
+
+    switch (req.query.order) {
+        case 'asc':
+            order = 1
+            break;
+        case 'des':
+            order = -1
+            break;
+        default:
+            order = 1
+            break;
+    }
 
     try {
         const conversations = await Conversation.find()
         .skip(offset)
         .limit(limit)
+        .sort({ _id: order })
         
         res.json(conversations)
     } catch(err) {
