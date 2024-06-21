@@ -1,6 +1,7 @@
 import express from 'express'
 import mongoose from 'mongoose'
 import * as dotenv from 'dotenv'
+import cors from 'cors'
 import Session from './model/session.js'
 import getCurrentTime from './utils/time.js'
 import generateRandomID from './utils/randomId.js'
@@ -8,8 +9,9 @@ import Conversation from './model/conversation.js'
 import HumanMessage from './model/humanMessage.js'
 import AiMessage from './model/aiMessage.js'
 
-dotenv.config();
+dotenv.config()
 const app = express()
+app.use(cors())
 app.use(express.json())
 
 mongoose.connect(process.env.MONGO_URI)
@@ -33,7 +35,6 @@ app.listen(PORT, ()=> {
 app.get("/sessions", async (req, res) => {
     try {
         const sessions = await Session.find()
-        //console.log(sessions)
         res.json(sessions)
     } catch(err) {
         res.json({
@@ -131,8 +132,15 @@ app.patch("/sessions/updateActivity/:id", async(req, res)=>{
 // Conversations
 
 app.get("/conversations", async(req, res) => {
+    const page = parseInt(req.query.page) || 1
+    const limit = parseInt(req.query.limit) || 100
+    const offset = (page - 1) * limit
+
     try {
         const conversations = await Conversation.find()
+        .skip(offset)
+        .limit(limit)
+        
         res.json(conversations)
     } catch(err) {
         res.json({
